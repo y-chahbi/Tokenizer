@@ -6,17 +6,18 @@ It’s deployed on the **Sepolia testnet** using the Remix IDE and built on top 
 
 ## File Structure
 
-```tokenizer/
-├── code/
-│ ├── Ycbm42.sol
-│ └── Ycbmb42.sol
-├── deployment/
-│ ├── deployment-instructions.md
-│ └── bonus-deployment-instructions.md
-├── documentation/
-│ ├── Contract.md
-│ └── MultiSignContract.md
-└── README.md```
+```
+─ code/
+├── Ycbm42.sol
+└── Ycbmb42.sol
+─ deployment/
+├── deployment-instructions.md
+└── bonus-deployment-instructions.md
+─ documentation/
+├── Contract.md
+└── MultiSignContract.md
+─ README.md
+```
 
 ## Features
 - **Token Name**: Ycbm42  
