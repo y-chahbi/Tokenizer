@@ -19,9 +19,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract Onyx42 is ERC20 {
-    constructor() ERC20("Onyx42", "ONX42") {
-        _mint(msg.sender, 1000 * 10 ** 18);
+contract Ycbm42 is ERC20 {
+    constructor() ERC20("Ycbm42", "YCM42") {
+        _mint(msg.sender, 1_000_000 * 10 ** 18);
     }
 }
 ```
@@ -46,12 +46,12 @@ contract Onyx42 is ERC20 {
 - OpenZeppelin contracts are widely audited and considered secure.  
 - Provides all core ERC-20 functionality such as transfer and approval mechanisms.
 
-### `contract Onyx42 is ERC20 {`
+### `contract Ycbm42 is ERC20 {`
 
-- Declares the smart contract named **Onyx42**.  
+- Declares the smart contract named **Ycbm42**.  
 - Inherits from OpenZeppelin’s `ERC20` contract to include all standard ERC-20 features.
 
-### `constructor() ERC20("Onyx42", "ONX42") {`
+### `constructor() ERC20("Ycbm42", "YCM42") {`
 
 - Contract constructor executed upon deployment.  
 - Calls the parent `ERC20` constructor with the token name and symbol.  
@@ -140,4 +140,3 @@ You can verify and interact with the contract via [Remix IDE](https://remix.ethe
 - Transfer tokens between accounts.  
 - Use compatible decentralized applications (dApps).  
 - Monitor balances and transactions on Etherscan.
-
