@@ -1,10 +1,12 @@
 # Ycbm42 (YCM42)
 
 ## Overview
-Ycbm42 is an ERC-20 token created as part of the 42 School Tokenizer project. It is deployed on the Sepolia testnet using Remix IDE and OpenZeppelin contracts.
+**Ycbm42** is a custom ERC-20 token developed as part of the **42 School Tokenizer** project.  
+It’s deployed on the **Sepolia testnet** using the Remix IDE and built on top of OpenZeppelin’s secure, community-trusted contracts.
 
 ## File Structure
 
+```
 tokenizer/
 ├── code/
 │ └── Ycbm42.sol
@@ -13,76 +15,85 @@ tokenizer/
 ├── documentation/
 │ └── README.md
 └── README.md
+```
 
 ## Features
-- **Name**: Ycbm42  
+- **Token Name**: Ycbm42  
 - **Symbol**: YCM42  
-- **Initial Supply**: 1,000,000 YCM42 (18 decimals)  
-- **Standard**: ERC-20 compliant  
-- **Security**: Uses OpenZeppelin’s audited implementation
+- **Initial Supply**: 1,000,000 YCM42 (with 18 decimal places)  
+- **Standard**: Fully ERC-20 compatible  
+- **Security**: Built using OpenZeppelin’s audited implementation for maximum reliability
 
 ## Deployment
-- **Network**: Sepolia Testnet  
-- **Contract Address**: [`0x8e848ecd36c86c9e5a5cf886472ad4f5443b7f43`](https://sepolia.etherscan.io/address/0x8e848ecd36c86c9e5a5cf886472ad4f5443b7f43)
+- **Blockchain Network**: Sepolia Testnet  
+- **Smart Contract Address**: [`0x8e848ecd36c86c9e5a5cf886472ad4f5443b7f43`](https://sepolia.etherscan.io/address/0x8e848ecd36c86c9e5a5cf886472ad4f5443b7f43)
 
-## Project Goal
-This 42 project aims to explore the fundamentals of Web3 by creating a personal token. The goal is to learn blockchain technology and the principles of decentralization.
+## Project Purpose
+This project is part of an educational journey to understand **Web3 fundamentals**, token creation, and blockchain development.  
+The end goal is to gain hands-on experience with smart contracts, token standards, and decentralized ecosystems.
 
-## Web3 Introduction
-Web3, or Web 3.0, is the decentralized internet built on blockchain, peer-to-peer networks, and distributed systems. Unlike Web 2.0, Web3 gives users control over their data and interactions without relying on centralized entities.
+## Web3 in Brief
+Web3 represents the next generation of the internet — decentralized, trustless, and user-owned.  
+Unlike Web 2.0, where data and control are centralized, Web3 leverages **blockchain technology** to give power back to the users through smart contracts and peer-to-peer networks.
 
-Web3 enables decentralized applications (dApps) across various domains like finance (DeFi), gaming, governance, and more.
+It opens the door to:
+- Decentralized finance (**DeFi**)
+- On-chain governance
+- Blockchain gaming
+- Digital ownership and NFTs
 
-## Implementation Choices
+## Implementation Decisions
 
-### Why Ethereum and ERC-20
-Ethereum is the most established smart contract platform. ERC-20 is the most widely used standard for creating fungible tokens, ensuring broad compatibility with wallets and dApps.
+### Ethereum + ERC-20
+Ethereum offers the most mature ecosystem for smart contracts.  
+The ERC-20 standard guarantees that Ycbm42 works seamlessly with wallets, exchanges, and other dApps.
 
-### Why Solidity
-Solidity is the primary language for writing Ethereum smart contracts. It's statically typed, supports inheritance and libraries, and targets the Ethereum Virtual Machine (EVM).
+### Solidity
+Chosen because it’s the native language for Ethereum smart contracts — supporting inheritance, libraries, and strong typing.
 
-### Why Remix IDE
-Remix is a beginner-friendly web-based IDE for writing, compiling, and deploying smart contracts. It’s ideal for fast prototyping and testing.
+### Remix IDE
+Perfect for rapid prototyping and deployment directly from the browser without complicated setup.
 
-### Why OpenZeppelin
-OpenZeppelin provides reusable and secure smart contract libraries. Their ERC-20 implementation is battle-tested and widely trusted in the Ethereum ecosystem.
+### OpenZeppelin
+Trusted, reusable, and secure — the de facto standard for production-ready smart contract components.
 
-### Why MetaMask
-MetaMask is a browser extension wallet that allows easy interaction with dApps and token contracts on Ethereum testnets and the mainnet.
+### MetaMask
+The go-to wallet for interacting with Ethereum networks, making testing and deployment straightforward.
 
-## Cryptographic Foundations
-Modern cryptography ensures blockchain integrity through four pillars:
-- **Confidentiality**: Only authorized parties can access the data.
-- **Integrity**: Data can’t be tampered with unnoticed.
-- **Authentication**: Participants can verify each other’s identity.
-- **Non-repudiation**: Actions cannot be denied after the fact.
+## Blockchain Security Pillars
+Ycbm42’s foundation rests on these cryptographic principles:
+- **Confidentiality** – Only intended parties can view sensitive data.
+- **Integrity** – Data on-chain is immutable once recorded.
+- **Authentication** – Verifies identities of participants.
+- **Non-repudiation** – Prevents denial of transactions after execution.
 
-## Token vs Coin
-- **Coins**: Native to a blockchain (e.g., ETH, BTC).
-- **Tokens**: Built on existing blockchains (e.g., YCM42 on Ethereum).
+## Token vs. Coin
+- **Coins**: Native to their own blockchain (e.g., ETH, BTC).  
+- **Tokens**: Built on top of an existing blockchain (e.g., YCM42 on Ethereum).
 
-## Key Technologies
+## Key Concepts
 
 ### Blockchain
-A blockchain is a decentralized ledger where each block contains transaction data and a cryptographic link to the previous block. Once added, blocks cannot be altered, ensuring data immutability.
+A distributed ledger where transactions are stored in linked blocks, secured by cryptography.
 
-### Smart Contract
-A smart contract is a blockchain program that runs automatically when certain conditions are met. It enables decentralized apps (dApps) and advanced features by supporting complex operations beyond simple transactions.
+### Smart Contracts
+Self-executing programs on the blockchain that follow predefined rules.
 
 ### Token
-A token is a digital asset created on a blockchain, often representing value or rights. ERC-20 tokens like YCM42 follow a standard, making them easy to use with wallets and dApps.
+A blockchain-based asset representing value, access rights, or both.  
+YCM42 follows the ERC-20 standard for interoperability.
 
-### Coin 
-A coin is the native cryptocurrency of a blockchain, used primarily for transactions, paying network fees, and securing the network (e.g., ETH on Ethereum, BTC on Bitcoin). Coins operate on their own blockchain, unlike tokens which are built on top of existing blockchains.
+### Coin
+The primary currency of a blockchain, used for network fees and security.
 
 ### Wallet
-A wallet is a software or hardware tool that allows users to store, send, and receive cryptocurrencies and tokens. Wallets manage private keys, enabling secure access and control over blockchain assets.
+A tool for securely storing and managing blockchain assets and private keys.
 
 ### Etherscan
-Etherscan is a blockchain explorer for Ethereum networks. It allows users to view transactions, contract details, and token information, providing transparency and traceability for all on-chain activity.
+An explorer for Ethereum where you can view transactions, contract code, and token details.
 
 ### Gas
-Gas is the unit that measures the computational effort required to execute operations on the Ethereum network. Users pay gas fees in ETH to incentivize miners or validators to process transactions and smart contract executions.
+A fee paid in ETH to execute transactions or run smart contracts on the Ethereum network.
 
 ### Testnet
-A testnet is a parallel blockchain used for testing and development. It allows developers to deploy and interact with smart contracts without risking real assets, using test tokens instead of real cryptocurrency.
+A sandbox version of the blockchain for experimentation without using real funds.
