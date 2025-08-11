@@ -53,10 +53,21 @@ contract Ycbmb42 is ERC20 {
         require(_to != address(0), "Invalid recipient");
         require(_amount > 0, "Amount must be >0");
         require(balanceOf(address(this)) >= _amount, "Insufficient balance");
-        
+
+        uint txIndex = transactions.length;
         transactions.push(Transaction(_to, _amount, false, 0));
-        emit SubmitTransaction(transactions.length - 1, _to, _amount);
+
+        isConfirmed[txIndex][msg.sender] = true;
+        transactions[txIndex].confirmations = 1;
+
+        emit SubmitTransaction(txIndex, _to, _amount);
+        emit ConfirmTransaction(msg.sender, txIndex);
+
+        if (transactions[txIndex].confirmations >= required) {
+            _executeTransaction(txIndex);
+        }
     }
+
 
     function confirmTransaction(uint _txIndex) external onlyOwner txExists(_txIndex) {
         Transaction storage transaction = transactions[_txIndex];
