@@ -6,16 +6,17 @@ It’s deployed on the **Sepolia testnet** using the Remix IDE and built on top 
 
 ## File Structure
 
-```
-tokenizer/
+```tokenizer/
 ├── code/
-│ └── Ycbm42.sol
+│ ├── Ycbm42.sol
+│ └── Ycbmb42.sol
 ├── deployment/
-│ └── deployment-instructions.md
+│ ├── deployment-instructions.md
+│ └── bonus-deployment-instructions.md
 ├── documentation/
-│ └── README.md
-└── README.md
-```
+│ ├── Contract.md
+│ └── MultiSignContract.md
+└── README.md```
 
 ## Features
 - **Token Name**: Ycbm42  
@@ -27,6 +28,15 @@ tokenizer/
 ## Deployment
 - **Blockchain Network**: Sepolia Testnet  
 - **Smart Contract Address**: [`0x8e848ecd36c86c9e5a5cf886472ad4f5443b7f43`](https://sepolia.etherscan.io/address/0x8e848ecd36c86c9e5a5cf886472ad4f5443b7f43)
+
+## Bonus Deployment Instructions
+In addition to the main deployment steps found in `deployment/deployment-instructions.md`, the bonus instructions include:  
+- Deploying the multisignature variant `Ycbmb42.sol` located in the `code/` directory.  
+- Setting up multiple owners and the required confirmation count for secure transaction approvals.  
+- Using the multi-owner wallet features to manage token transfers collaboratively.  
+- Monitoring and interacting with multisig transactions via emitted events detailed in `documentation/MultiSignContract.md`.
+
+For detailed bonus deployment steps, please refer to `deployment/bonus-deployment-instructions.md`.
 
 ## Project Purpose
 This project is part of an educational journey to understand **Web3 fundamentals**, token creation, and blockchain development.  
