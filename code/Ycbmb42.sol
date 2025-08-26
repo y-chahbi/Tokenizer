@@ -33,7 +33,6 @@ contract Ycbmb42 is ERC20, ReentrancyGuard {
     /// Store all transactions
     mapping(uint256 => Transaction) public transactions;
     // ==================== EVENTS ====================
-    
     event TransactionSubmitted(
         uint256 indexed txId, 
         address indexed submitter,
@@ -137,6 +136,7 @@ contract Ycbmb42 is ERC20, ReentrancyGuard {
         require(_to != address(0), "Ycbmb42: invalid recipient");
         require(_amount > 0, "Ycbmb42: amount must be greater than zero");
         require(balanceOf(address(this)) >= _amount, "Ycbmb42: insufficient contract balance");
+        require(bytes(_description).length <= 256, "Description too long");
         
         txId = transactionCount;
         
