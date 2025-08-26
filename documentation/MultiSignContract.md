@@ -1,305 +1,256 @@
-# Ycbmb42 Multi-Signature Wallet Contract Documentation
+# Ycbmb42 Multi-Signature Wallet Documentation
 
 ## Overview
 
-The **Ycbmb42** contract is a sophisticated multi-signature wallet that combines ERC20 token functionality with secure multi-signature transaction management. This contract allows multiple owners to collectively manage token transfers through a consensus mechanism, ensuring enhanced security for digital asset management.
+The **Ycbmb42** contract is a sophisticated multi-signature wallet that also functions as an ERC20 token. It allows multiple owners to collectively manage token transfers through a consensus mechanism, requiring a minimum number of confirmations before executing any transaction.
 
 ## Table of Contents
 
-1. [Contract Features](#contract-features)
-2. [Architecture](#architecture)
-3. [Core Components](#core-components)
-4. [Functions Reference](#functions-reference)
-5. [Usage Examples](#usage-examples)
-6. [Security Features](#security-features)
-7. [Deployment Guide](#deployment-guide)
-8. [Events](#events)
-9. [Best Practices](#best-practices)
+- [Features](#features)
+- [Contract Architecture](#contract-architecture)
+- [Deployment Guide (Remix)](#deployment-guide-remix)
+- [Core Functions](#core-functions)
+- [View Functions](#view-functions)
+- [Events](#events)
+- [Security Features](#security-features)
+- [Usage Examples](#usage-examples)
+- [Testing Guide](#testing-guide)
+- [Best Practices](#best-practices)
 
----
+## Features
 
-## Contract Features
+### 🔐 Multi-Signature Security
+- Multiple owners must approve transactions
+- Configurable confirmation threshold
+- Protection against single points of failure
 
-### ✨ **Key Features**
-- **Multi-Signature Security**: Requires multiple owner confirmations before executing transactions
-- **ERC20 Token Integration**: Functions as a standard ERC20 token with 1,000,000 initial supply
-- **Reentrancy Protection**: Built-in security against reentrancy attacks
-- **Flexible Configuration**: Configurable number of required confirmations
-- **Transaction Management**: Submit, confirm, revoke, and execute transactions
-- **Comprehensive Auditing**: Full transaction history with timestamps and descriptions
+### 🪙 ERC20 Token Integration
+- Built-in ERC20 token functionality
+- Initial supply: 1,000,000 tokens (YCB42)
+- Token transfers managed through multi-sig approval
 
-### 🔧 **Technical Specifications**
-- **Solidity Version**: ^0.8.19
-- **Token Name**: Ycbmb42
-- **Token Symbol**: YCB42
-- **Initial Supply**: 1,000,000 tokens (18 decimals)
-- **Maximum Owners**: 50
-- **Minimum Required Confirmations**: 1
+### 🛡️ Security Enhancements
+- Reentrancy protection
+- CEI (Checks-Effects-Interactions) pattern
+- Comprehensive input validation
 
----
+### 📊 Advanced Features
+- Transaction descriptions
+- Timestamp tracking
+- Pending transaction management
+- Detailed confirmation tracking
 
-## Architecture
-
-The contract inherits from two OpenZeppelin contracts:
-- **ERC20**: Provides standard token functionality
-- **ReentrancyGuard**: Protects against reentrancy attacks
-
-```solidity
-contract Ycbmb42 is ERC20, ReentrancyGuard
-```
-
----
-
-## Core Components
+## Contract Architecture
 
 ### State Variables
 
 | Variable | Type | Description |
 |----------|------|-------------|
-| `owners` | `address[]` | Array of wallet owner addresses |
-| `required` | `uint256` | Number of confirmations required (immutable) |
-| `transactionCount` | `uint256` | Total number of submitted transactions |
-| `MAX_OWNERS` | `uint256` | Maximum allowed owners (50) |
+| `owners` | `address[]` | Array of wallet owners |
+| `required` | `uint256` | Required confirmations (immutable) |
+| `transactionCount` | `uint256` | Total submitted transactions |
+| `MAX_OWNERS` | `uint256` | Maximum owners limit (50) |
 | `MIN_REQUIRED` | `uint256` | Minimum required confirmations (1) |
 
 ### Transaction Structure
 
 ```solidity
 struct Transaction {
-    address to;                 // Recipient address
-    uint256 amount;            // Amount of tokens to transfer  
-    bool executed;             // Execution status
-    uint256 confirmations;     // Number of confirmations received
-    uint256 timestamp;         // When transaction was submitted
-    address submitter;         // Who submitted the transaction
-    string description;        // Optional description
+    address to;           // Recipient address
+    uint256 amount;       // Token amount
+    bool executed;        // Execution status
+    uint256 confirmations;// Confirmation count
+    uint256 timestamp;    // Submission time
+    address submitter;    // Transaction submitter
+    string description;   // Optional description
 }
 ```
 
 ### Key Mappings
 
-- `mapping(address => bool) public isOwner`: Quick owner verification
-- `mapping(uint256 => mapping(address => bool)) public isConfirmed`: Confirmation tracking
-- `mapping(uint256 => Transaction) public transactions`: Transaction storage
+- `isOwner[address]` → `bool`: Owner validation
+- `isConfirmed[txId][owner]` → `bool`: Confirmation tracking
+- `transactions[txId]` → `Transaction`: Transaction storage
 
----
+## Deployment Guide (Remix)
 
-## Functions Reference
+### Prerequisites
 
-### Constructor
+1. **MetaMask** wallet installed and configured
+2. **Remix IDE** open in browser
+3. **Test ETH** for deployment (Sepolia/Goerli testnet recommended)
 
+### Step-by-Step Deployment
+
+#### 1. Setup Remix Environment
+
+1. Open [Remix IDE](https://remix.ethereum.org/)
+2. Create a new file: `Ycbmb42.sol`
+3. Copy and paste the contract code
+
+#### 2. Install Dependencies
+
+In Remix, the OpenZeppelin imports will be automatically resolved:
 ```solidity
-constructor(address[] memory _owners, uint256 _required)
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 ```
 
-**Parameters:**
-- `_owners`: Array of initial owner addresses
-- `_required`: Number of confirmations required to execute transactions
+#### 3. Compile Contract
 
-**Requirements:**
-- At least 1 owner, maximum 50 owners
-- Required confirmations between 1 and number of owners
-- All owner addresses must be unique and non-zero
+1. Go to **Solidity Compiler** tab
+2. Select compiler version: `0.8.19` or higher
+3. Enable optimization (200 runs recommended)
+4. Click **Compile Ycbmb42.sol**
 
-### Core Transaction Functions
+#### 4. Prepare Deployment Parameters
 
-#### `submitTransaction(address _to, uint256 _amount, string calldata _description)`
+```javascript
+// Example deployment parameters
+const owners = [
+    "0x1234567890123456789012345678901234567890",  // Owner 1
+    "0x0987654321098765432109876543210987654321",  // Owner 2
+    "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"   // Owner 3
+];
+const required = 2; // Require 2 out of 3 confirmations
+```
 
-Submits a new transaction proposal for token transfer.
+#### 5. Deploy Contract
 
-**Parameters:**
+1. Go to **Deploy & Run Transactions** tab
+2. Select environment (Injected Provider - MetaMask)
+3. Select account with sufficient ETH
+4. Choose `Ycbmb42` contract
+5. Enter constructor parameters:
+   - `_owners`: `["0x...", "0x...", "0x..."]`
+   - `_required`: `2`
+6. Click **Deploy**
+7. Confirm transaction in MetaMask
+
+#### 6. Verify Deployment
+
+After deployment, verify:
+- Contract address is generated
+- Initial token supply is minted
+- Owners are correctly set
+- Required confirmations match input
+
+## Core Functions
+
+### Transaction Management
+
+#### `submitTransaction(address _to, uint256 _amount, string _description)`
+**Purpose**: Submit a new transaction proposal
+
+**Parameters**:
 - `_to`: Recipient address
-- `_amount`: Amount of tokens to transfer
+- `_amount`: Token amount (in wei units)
 - `_description`: Optional transaction description
 
-**Returns:** `uint256` - Transaction ID
+**Returns**: `uint256 txId` - Transaction ID
 
-**Features:**
-- Auto-confirms transaction by submitter
-- Auto-executes if required confirmations met
-- Validates recipient address and amount
-- Checks contract balance sufficiency
+**Example**:
+```javascript
+// Submit transaction for 1000 tokens
+await contract.submitTransaction(
+    "0x742d35Cc7672C4d8C5b4c8e3d8925d7C6C5Bb4a7",
+    ethers.utils.parseUnits("1000", 18),
+    "Monthly payment to contractor"
+);
+```
 
 #### `confirmTransaction(uint256 _txId)`
+**Purpose**: Confirm a pending transaction
 
-Confirms a pending transaction.
-
-**Parameters:**
-- `_txId`: Transaction ID to confirm
-
-**Requirements:**
+**Requirements**:
 - Caller must be an owner
 - Transaction must exist and not be executed
-- Caller must not have already confirmed
+- Owner must not have already confirmed
+
+**Example**:
+```javascript
+// Confirm transaction ID 0
+await contract.confirmTransaction(0);
+```
 
 #### `revokeConfirmation(uint256 _txId)`
+**Purpose**: Revoke a previous confirmation
 
-Revokes a previous confirmation.
+**Requirements**:
+- Transaction must not be executed
+- Owner must have previously confirmed
 
-**Parameters:**
-- `_txId`: Transaction ID to revoke confirmation
-
-**Requirements:**
-- Caller must be an owner
-- Transaction must exist and not be executed
-- Caller must have previously confirmed
+**Example**:
+```javascript
+// Revoke confirmation for transaction ID 0
+await contract.revokeConfirmation(0);
+```
 
 #### `executeTransaction(uint256 _txId)`
+**Purpose**: Manually execute a transaction with sufficient confirmations
 
-Manually executes a transaction with sufficient confirmations.
-
-**Parameters:**
-- `_txId`: Transaction ID to execute
-
-**Requirements:**
+**Requirements**:
 - Transaction must have enough confirmations
 - Transaction must not be already executed
-- Protected against reentrancy
 
-### View Functions
+## View Functions
+
+### Information Retrieval
 
 #### `getTransaction(uint256 _txId)`
+**Returns**: Complete transaction details
 
-Returns complete transaction details.
-
-**Returns:** `Transaction` struct with all transaction information
+```javascript
+const tx = await contract.getTransaction(0);
+console.log({
+    to: tx.to,
+    amount: tx.amount.toString(),
+    executed: tx.executed,
+    confirmations: tx.confirmations.toString(),
+    timestamp: tx.timestamp.toString(),
+    submitter: tx.submitter,
+    description: tx.description
+});
+```
 
 #### `getConfirmationStatus(uint256 _txId, address _owner)`
+**Returns**: Boolean confirmation status for specific owner
 
-Checks if a specific owner has confirmed a transaction.
-
-**Returns:** `bool` - Confirmation status
-
-#### `getOwners()`
-
-Returns array of all owner addresses.
-
-**Returns:** `address[]` - Array of owner addresses
+```javascript
+const isConfirmed = await contract.getConfirmationStatus(0, ownerAddress);
+console.log(`Transaction 0 confirmed by ${ownerAddress}: ${isConfirmed}`);
+```
 
 #### `getPendingTransactions()`
+**Returns**: Array of unexecuted transaction IDs
 
-Returns array of unexecuted transaction IDs.
-
-**Returns:** `uint256[]` - Array of pending transaction IDs
-
-#### `canExecuteTransaction(uint256 _txId)`
-
-Checks if a transaction can be executed.
-
-**Returns:** `bool` - Execution eligibility
+```javascript
+const pendingTxs = await contract.getPendingTransactions();
+console.log("Pending transactions:", pendingTxs);
+```
 
 #### `getConfirmedOwners(uint256 _txId)`
-
-Returns array of owners who confirmed a specific transaction.
-
-**Returns:** `address[]` - Array of confirming owner addresses
-
-#### `getContractBalance()`
-
-Returns the contract's token balance.
-
-**Returns:** `uint256` - Contract token balance
-
----
-
-## Usage Examples
-
-### Deployment
+**Returns**: Array of owners who confirmed the transaction
 
 ```javascript
-// Deploy with 3 owners requiring 2 confirmations
-const owners = [
-    "0x1234...",
-    "0x5678...",
-    "0x9abc..."
-];
-const requiredConfirmations = 2;
-
-const contract = await Ycbmb42.deploy(owners, requiredConfirmations);
+const confirmedOwners = await contract.getConfirmedOwners(0);
+console.log("Owners who confirmed:", confirmedOwners);
 ```
 
-### Submit a Transaction
+#### `canExecuteTransaction(uint256 _txId)`
+**Returns**: Boolean indicating if transaction can be executed
 
 ```javascript
-// Submit transaction to transfer 1000 tokens
-const recipient = "0xdef0...";
-const amount = ethers.parseUnits("1000", 18);
-const description = "Payment for services";
-
-const txId = await contract.submitTransaction(recipient, amount, description);
-```
-
-### Check Transaction Status
-
-```javascript
-// Get transaction details
-const transaction = await contract.getTransaction(txId);
-console.log("Confirmations:", transaction.confirmations);
-console.log("Executed:", transaction.executed);
-
-// Check if specific owner confirmed
-const isConfirmed = await contract.getConfirmationStatus(txId, ownerAddress);
-
-// Check if ready to execute
-const canExecute = await contract.canExecuteTransaction(txId);
-```
-
-### Confirm a Transaction
-
-```javascript
-// Confirm transaction as an owner
-await contract.confirmTransaction(txId);
-
-// Check who confirmed
-const confirmedOwners = await contract.getConfirmedOwners(txId);
-```
-
-### Get Pending Transactions
-
-```javascript
-// Get all pending transactions
-const pendingTxIds = await contract.getPendingTransactions();
-
-// Process each pending transaction
-for (const txId of pendingTxIds) {
-    const tx = await contract.getTransaction(txId);
-    console.log(`Transaction ${txId}: ${tx.amount} tokens to ${tx.to}`);
+const canExecute = await contract.canExecuteTransaction(0);
+if (canExecute) {
+    await contract.executeTransaction(0);
 }
 ```
 
----
-
-## Security Features
-
-### 🛡️ **Built-in Security**
-
-1. **Reentrancy Protection**: Uses OpenZeppelin's `ReentrancyGuard`
-2. **Input Validation**: Comprehensive validation of all parameters
-3. **Access Control**: Strict owner-only access to critical functions
-4. **CEI Pattern**: Follows Checks-Effects-Interactions pattern
-5. **Overflow Protection**: Solidity ^0.8.19 built-in overflow protection
-
-### 🔒 **Multi-Signature Security**
-
-- **Consensus Mechanism**: Requires multiple owner confirmations
-- **Flexible Thresholds**: Configurable required confirmations
-- **Revocation Capability**: Owners can revoke confirmations
-- **Audit Trail**: Complete transaction history with timestamps
-
-### ⚠️ **Security Considerations**
-
-1. **Owner Key Management**: Secure storage of owner private keys
-2. **Required Confirmations**: Balance between security and usability
-3. **Owner Addition/Removal**: Not implemented in current version
-4. **Emergency Procedures**: Consider implementing emergency functions
-
----
-
 ## Events
 
-The contract emits the following events for off-chain monitoring:
+### Transaction Events
 
-### `TransactionSubmitted`
 ```solidity
 event TransactionSubmitted(
     uint256 indexed txId, 
@@ -308,123 +259,224 @@ event TransactionSubmitted(
     uint256 amount, 
     string description
 );
-```
 
-### `TransactionConfirmed`
-```solidity
 event TransactionConfirmed(
     address indexed owner, 
     uint256 indexed txId
 );
-```
 
-### `ConfirmationRevoked`
-```solidity
 event ConfirmationRevoked(
     address indexed owner, 
     uint256 indexed txId
 );
-```
 
-### `TransactionExecuted`
-```solidity
 event TransactionExecuted(
     uint256 indexed txId, 
     address indexed executor
 );
 ```
 
-### `OwnerAdded` / `OwnerRemoved`
+### Owner Management Events
+
 ```solidity
 event OwnerAdded(address indexed newOwner);
 event OwnerRemoved(address indexed removedOwner);
 ```
 
----
+## Security Features
 
-## Deployment Guide
+### 🛡️ Protection Mechanisms
 
-### Prerequisites
+1. **Reentrancy Guard**: Prevents reentrancy attacks
+2. **CEI Pattern**: Checks-Effects-Interactions for safe execution
+3. **Input Validation**: Comprehensive parameter validation
+4. **Owner Limits**: Maximum 50 owners to prevent DoS
+5. **Immutable Required**: Confirmation threshold cannot be changed
 
-1. **Development Environment**: Hardhat, Truffle, or Remix
-2. **Dependencies**: OpenZeppelin Contracts
-3. **Network Configuration**: Ethereum, Polygon, or other EVM-compatible chain
+### 🔍 Access Control
 
-### Installation
+- **onlyOwner**: Restricts functions to wallet owners
+- **Validation Modifiers**: Ensure transaction validity
+- **Confirmation Tracking**: Prevents double confirmations
 
-```bash
-# Install OpenZeppelin Contracts
-npm install @openzeppelin/contracts
+## Usage Examples
 
-# Install development dependencies
-npm install --save-dev hardhat @nomiclabs/hardhat-ethers ethers
-```
-
-### Deployment Script
+### Complete Transaction Flow
 
 ```javascript
-async function main() {
-    // Get signers
-    const [deployer] = await ethers.getSigners();
-    
-    // Define owners and required confirmations
-    const owners = [
-        "0x...", // Owner 1
-        "0x...", // Owner 2
-        "0x..."  // Owner 3
-    ];
-    const required = 2; // Require 2 out of 3 confirmations
-    
-    // Deploy contract
-    const Ycbmb42 = await ethers.getContractFactory("Ycbmb42");
-    const contract = await Ycbmb42.deploy(owners, required);
-    
-    await contract.deployed();
-    
-    console.log("Ycbmb42 deployed to:", contract.address);
-    console.log("Initial supply minted to contract:", await contract.getContractBalance());
+// 1. Submit transaction
+const txId = await contract.submitTransaction(
+    recipientAddress,
+    ethers.utils.parseUnits("500", 18),
+    "Payment for services"
+);
+
+// 2. Other owners confirm
+await contract.connect(owner2).confirmTransaction(txId);
+await contract.connect(owner3).confirmTransaction(txId);
+
+// 3. Check if executable
+const canExecute = await contract.canExecuteTransaction(txId);
+
+// 4. Execute if ready (auto-executed if threshold reached)
+if (canExecute) {
+    await contract.executeTransaction(txId);
 }
 ```
 
-### Verification
+### Monitoring Events
 
-```bash
-# Verify contract on Etherscan
-npx hardhat verify --network mainnet DEPLOYED_CONTRACT_ADDRESS "['0x...','0x...']" 2
+```javascript
+// Listen for new transactions
+contract.on("TransactionSubmitted", (txId, submitter, to, amount, description) => {
+    console.log(`New transaction ${txId}: ${amount} tokens to ${to}`);
+    console.log(`Description: ${description}`);
+});
+
+// Listen for confirmations
+contract.on("TransactionConfirmed", (owner, txId) => {
+    console.log(`Transaction ${txId} confirmed by ${owner}`);
+});
+
+// Listen for executions
+contract.on("TransactionExecuted", (txId, executor) => {
+    console.log(`Transaction ${txId} executed by ${executor}`);
+});
+```
+
+## Testing Guide
+
+### Using Remix Testing
+
+#### 1. Basic Deployment Test
+
+```javascript
+// Test deployment parameters
+const owners = ["0x...", "0x...", "0x..."];
+const required = 2;
+
+// Deploy and verify
+assert.equal(await contract.required(), required);
+assert.equal((await contract.getOwners()).length, owners.length);
+```
+
+#### 2. Transaction Flow Test
+
+```javascript
+// Submit transaction
+const txId = await contract.submitTransaction(
+    testAddress,
+    ethers.utils.parseUnits("100", 18),
+    "Test transaction"
+);
+
+// Verify transaction
+const tx = await contract.getTransaction(txId);
+assert.equal(tx.to, testAddress);
+assert.equal(tx.confirmations.toString(), "1");
+
+// Confirm by another owner
+await contract.connect(owner2).confirmTransaction(txId);
+
+// Check execution (if required = 2)
+const txAfterConfirm = await contract.getTransaction(txId);
+assert.equal(txAfterConfirm.executed, true);
+```
+
+### Test Scenarios
+
+1. **Happy Path**: Submit → Confirm → Execute
+2. **Insufficient Confirmations**: Verify execution fails
+3. **Revoke Confirmation**: Test confirmation revocation
+4. **Invalid Parameters**: Test error handling
+5. **Access Control**: Test non-owner restrictions
+
+## Best Practices
+
+### 🔐 Security Considerations
+
+1. **Owner Selection**: Choose trusted, active owners
+2. **Required Threshold**: Balance security vs usability (typically 60-70% of owners)
+3. **Regular Monitoring**: Monitor pending transactions
+4. **Emergency Planning**: Have procedures for compromised owners
+
+### ⚡ Gas Optimization
+
+1. **Batch Operations**: Group multiple confirmations
+2. **Efficient Queries**: Use view functions for data retrieval
+3. **Avoid Large Arrays**: Use pagination for large datasets
+
+### 🔧 Operational Tips
+
+1. **Transaction Descriptions**: Always provide clear descriptions
+2. **Confirmation Tracking**: Monitor who has confirmed transactions
+3. **Regular Cleanup**: Execute or cancel stale transactions
+4. **Event Monitoring**: Set up event listeners for real-time updates
+
+### 📱 Frontend Integration
+
+```javascript
+// Example React hook for transaction management
+function useMultiSigWallet(contractAddress, signer) {
+    const contract = new ethers.Contract(contractAddress, ABI, signer);
+    
+    const submitTransaction = async (to, amount, description) => {
+        return await contract.submitTransaction(to, amount, description);
+    };
+    
+    const getPendingTransactions = async () => {
+        const pendingIds = await contract.getPendingTransactions();
+        return Promise.all(
+            pendingIds.map(id => contract.getTransaction(id))
+        );
+    };
+    
+    return { submitTransaction, getPendingTransactions };
+}
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Issue**: "Transaction already confirmed by caller"
+**Solution**: Check if the owner already confirmed using `getConfirmationStatus()`
+
+**Issue**: "Insufficient confirmations"
+**Solution**: Ensure enough owners have confirmed before execution
+
+**Issue**: "Invalid recipient"
+**Solution**: Verify recipient address is not zero address
+
+**Issue**: "Insufficient contract balance"
+**Solution**: Check contract token balance with `getContractBalance()`
+
+### Debug Functions
+
+```javascript
+// Check confirmation status
+const status = await contract.getConfirmationStatus(txId, ownerAddress);
+
+// Get confirmed owners
+const confirmedOwners = await contract.getConfirmedOwners(txId);
+
+// Check transaction details
+const transaction = await contract.getTransaction(txId);
+
+// Check if executable
+const canExecute = await contract.canExecuteTransaction(txId);
 ```
 
 ---
 
-## Best Practices
+## License
 
-### 🎯 **Operational Best Practices**
+This contract is licensed under the MIT License.
 
-1. **Owner Selection**: Choose trusted, technically competent owners
-2. **Key Management**: Use hardware wallets for owner accounts
-3. **Confirmation Thresholds**: Set appropriate required confirmations (typically 51-75% of owners)
-4. **Regular Audits**: Monitor pending transactions regularly
-5. **Transaction Descriptions**: Use clear, descriptive transaction descriptions
+## Support
 
-### 🔧 **Development Best Practices**
-
-1. **Testing**: Comprehensive unit and integration tests
-2. **Gas Optimization**: Monitor gas costs for operations
-3. **Upgradability**: Consider proxy patterns for future upgrades
-4. **Documentation**: Maintain clear documentation and comments
-5. **Security Audits**: Professional security audits before mainnet deployment
-
-### 📊 **Monitoring and Maintenance**
-
-1. **Event Monitoring**: Set up event listeners for real-time notifications
-2. **Dashboard Development**: Create management interfaces for owners
-3. **Backup Procedures**: Maintain secure backups of deployment information
-4. **Emergency Contacts**: Establish communication channels between owners
-5. **Regular Reviews**: Periodic review of owner list and required confirmations
-
----
-
-## Conclusion
-
-The Ycbmb42 multi-signature wallet provides a robust, secure solution for managing ERC20 tokens through collective ownership. Its combination of multi-signature security, comprehensive transaction management, and built-in safety features makes it suitable for organizations, DAOs, and teams requiring shared control over digital assets.
-
-For additional support or questions, refer to the contract source code or consult with blockchain security experts before production deployment.
+For issues or questions:
+1. Check the troubleshooting section
+2. Review transaction events for debugging
+3. Verify owner permissions and confirmations
+4. Test on testnet before mainnet deployment

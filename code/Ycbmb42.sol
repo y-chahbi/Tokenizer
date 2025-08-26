@@ -14,7 +14,6 @@ contract Ycbmb42 is ERC20, ReentrancyGuard {
     uint256 public constant MAX_OWNERS = 50;
     uint256 public constant MIN_REQUIRED = 1;
     // ==================== STRUCTS ====================
-    
     struct Transaction {
         address to;                 // Recipient address
         uint256 amount;            // Amount of tokens to transfer  
@@ -24,18 +23,15 @@ contract Ycbmb42 is ERC20, ReentrancyGuard {
         address submitter;         // Who submitted the transaction
         string description;        // Optional description
     }
-    
     // ==================== MAPPINGS ====================
-    
     /// Check if an address is an owner
     mapping(address => bool) public isOwner;
-    
+
     /// Track confirmations: transactionId => owner => confirmed
     mapping(uint256 => mapping(address => bool)) public isConfirmed;
     
     /// Store all transactions
     mapping(uint256 => Transaction) public transactions;
-    
     // ==================== EVENTS ====================
     
     event TransactionSubmitted(
@@ -65,7 +61,6 @@ contract Ycbmb42 is ERC20, ReentrancyGuard {
     event OwnerRemoved(address indexed removedOwner);
     
     // ==================== MODIFIERS ====================
-    
     /// Restrict access to owners only
     modifier onlyOwner() {
         require(isOwner[msg.sender], "Ycbmb42: caller is not an owner");
@@ -95,7 +90,6 @@ contract Ycbmb42 is ERC20, ReentrancyGuard {
         require(isConfirmed[_txId][msg.sender], "Ycbmb42: transaction not confirmed by caller");
         _;
     }
-    
     // ==================== CONSTRUCTOR ====================
     
 
@@ -133,7 +127,6 @@ contract Ycbmb42 is ERC20, ReentrancyGuard {
     }
     
     // ==================== CORE FUNCTIONS ====================
-    
     // Submit a new transaction proposal
 
     function submitTransaction(
@@ -234,8 +227,8 @@ contract Ycbmb42 is ERC20, ReentrancyGuard {
     }
     
     // ==================== VIEW FUNCTIONS ====================
-    
     // Get transaction details
+
     function getTransaction(uint256 _txId) 
         external 
         view 
@@ -317,8 +310,8 @@ contract Ycbmb42 is ERC20, ReentrancyGuard {
     }
     
     // ==================== EMERGENCY FUNCTIONS ====================
-    
     // Get contract token balance
+
     function getContractBalance() external view returns (uint256) {
         return balanceOf(address(this));
     }
